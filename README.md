@@ -30,7 +30,7 @@ You just need to write `#include <tle/debug>` in your code to use this library.
 ```C++
 #include <tle/debug>
 ```
-See example below for further details.
+See examples below for further details.
 
 ## Debugging
 
@@ -191,6 +191,7 @@ dline(_Tps... _patterns)
 
 ### Example 4
 #### C++ code
+```C++
 dline("-");
 dline("=");
 dline("-1-2-3");
