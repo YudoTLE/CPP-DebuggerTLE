@@ -141,7 +141,7 @@ void DEBUG::print_content_container(const std::string& _label, _Tp& _item)
 {
     for (auto it = _item.begin(); it != _item.end(); it++) {
         std::cout << (depth <= 0 ? "" : "\n" + indent), print(*it);
-        if (it != prev(_item.end()))
+        if (next(it) != _item.end())
             std::cout << _label;
     }
 }
