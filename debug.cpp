@@ -30,7 +30,7 @@ DEBUG::DEBUG()
     {}
 
 template <typename... _Tps>
-DEBUG::DEBUG(std::string _label, _Tps... _items)
+DEBUG::DEBUG(std::string _label, const _Tps&... _items)
     : label(_label), delayed_print([&, _items...]() { return print_output(_items...); })
     {}
 
@@ -73,7 +73,7 @@ void DEBUG::generate_labels(std::string _label)
 
 
 template <typename _Tp>
-void DEBUG::print_output(_Tp _item)
+void DEBUG::print_output(const _Tp& _item)
 {
     if (!labels.empty())
     {
@@ -85,7 +85,7 @@ void DEBUG::print_output(_Tp _item)
 }
 
 template <typename _Tp, typename... _Tps>
-void DEBUG::print_output(_Tp _item, const _Tps&... _items)
+void DEBUG::print_output(const _Tp& _item, const _Tps&... _items)
 {
     if (!labels.empty())
     {
@@ -116,7 +116,7 @@ void DEBUG::print_close(const std::string& _label)
 
 // Print Different Container
 template <typename _Tp1, typename _Tp2>
-void DEBUG::print_content_pair(const std::string& _label, std::pair<_Tp1, _Tp2>& _item)
+void DEBUG::print_content_pair(const std::string& _label, const std::pair<_Tp1, _Tp2>& _item)
 {
     std::cout << (depth <= 0 ? "" : "\n" + indent), print(_item.first);
     std::cout << _label;
@@ -124,7 +124,7 @@ void DEBUG::print_content_pair(const std::string& _label, std::pair<_Tp1, _Tp2>&
 }
 
 template <typename... _Tps>
-void DEBUG::print_content_tuple(const std::string& _label, std::tuple<_Tps...>& _item)
+void DEBUG::print_content_tuple(const std::string& _label, const std::tuple<_Tps...>& _item)
 {
     std::apply(
         [&](auto&&... args)
@@ -137,7 +137,7 @@ void DEBUG::print_content_tuple(const std::string& _label, std::tuple<_Tps...>& 
 }
 
 template <typename _Tp> 
-void DEBUG::print_content_container(const std::string& _label, _Tp& _item)
+void DEBUG::print_content_container(const std::string& _label, const _Tp& _item)
 {
     for (auto it = _item.begin(); it != _item.end(); it++) {
         std::cout << (depth <= 0 ? "" : "\n" + indent), print(*it);
@@ -147,25 +147,27 @@ void DEBUG::print_content_container(const std::string& _label, _Tp& _item)
 }
 
 template <typename _Tp> 
-void DEBUG::print_content_query_front(const std::string& _label, _Tp& _item)
+void DEBUG::print_content_query_front(const std::string& _label, const _Tp& _item)
 {
-    while (!_item.empty())
+    _Tp item = _item;
+    while (!item.empty())
     {
-        std::cout << (depth <= 0 ? "" : "\n" + indent), print(_item.front());
-        _item.pop();
-        if (!_item.empty())
+        std::cout << (depth <= 0 ? "" : "\n" + indent), print(item.front());
+        item.pop();
+        if (!item.empty())
             std::cout << _label;
     }
 }
 
 template <typename _Tp> 
-void DEBUG::print_content_query_top(const std::string& _label, _Tp& _item)
+void DEBUG::print_content_query_top(const std::string& _label, const _Tp& _item)
 {
-    while (!_item.empty())
+    _Tp item = _item;
+    while (!item.empty())
     {
-        std::cout << (depth <= 0 ? "" : "\n" + indent), print(_item.top());
-        _item.pop();
-        if (!_item.empty())
+        std::cout << (depth <= 0 ? "" : "\n" + indent), print(item.top());
+        item.pop();
+        if (!item.empty())
             std::cout << _label;
     }
 }
@@ -173,13 +175,16 @@ void DEBUG::print_content_query_top(const std::string& _label, _Tp& _item)
 
 // Print Various Data Types
 template <typename _Tp>
-void DEBUG::print(_Tp* _item)
+void DEBUG::print(const _Tp* _item)
 {
-    std::cout << POINTER_MARK, print(*_item);
+    if constexpr (is_same_v<_Tp, char> || is_same_v<_Tp, const char>)
+        std::cout << _item;
+    else
+        std::cout << POINTER_MARK, print(*_item);
 }
 
 template <typename _Tp>
-void DEBUG::print(_Tp& _item)
+void DEBUG::print(const _Tp& _item)
 {
     if constexpr (is_iterator<_Tp>::value)
         std::cout << ITERATOR_MARK, print(*_item);
@@ -188,7 +193,7 @@ void DEBUG::print(_Tp& _item)
 }
 
 template <typename _Tp1, typename _Tp2>
-void DEBUG::print(std::pair<_Tp1, _Tp2>& _item)
+void DEBUG::print(const std::pair<_Tp1, _Tp2>& _item)
 {
     print_open(PAIR_OPEN);
     print_content_pair(PAIR_SEPARATOR, _item);
@@ -196,7 +201,7 @@ void DEBUG::print(std::pair<_Tp1, _Tp2>& _item)
 }
 
 template <typename... _Tps>
-void DEBUG::print(std::tuple<_Tps...>& _item)
+void DEBUG::print(const std::tuple<_Tps...>& _item)
 {
     print_open(TUPLE_OPEN);
     print_content_tuple(TUPLE_SEPARATOR, _item);
@@ -204,7 +209,7 @@ void DEBUG::print(std::tuple<_Tps...>& _item)
 }
 
 template <typename _Tp, typename ALLOCATOR>
-void DEBUG::print(std::vector<_Tp, ALLOCATOR>& _item)
+void DEBUG::print(const std::vector<_Tp, ALLOCATOR>& _item)
 {
     print_open(VECTOR_OPEN);
     print_content_container(VECTOR_SEPARATOR, _item);
@@ -212,7 +217,7 @@ void DEBUG::print(std::vector<_Tp, ALLOCATOR>& _item)
 }
 
 template <typename _Key, typename _Compare, typename _Alloc>
-void DEBUG::print(std::set<_Key, _Compare, _Alloc>& _item)
+void DEBUG::print(const std::set<_Key, _Compare, _Alloc>& _item)
 {
     print_open(SET_OPEN);
     print_content_container(SET_SEPARATOR, _item);
@@ -220,7 +225,7 @@ void DEBUG::print(std::set<_Key, _Compare, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Compare, typename _Alloc>
-void DEBUG::print(std::multiset<_Key, _Compare, _Alloc>& _item)
+void DEBUG::print(const std::multiset<_Key, _Compare, _Alloc>& _item)
 {
     print_open(MULTISET_OPEN);
     print_content_container(MULTISET_SEPARATOR, _item);
@@ -228,7 +233,7 @@ void DEBUG::print(std::multiset<_Key, _Compare, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
-void DEBUG::print(std::map<_Key, _Tp, _Compare, _Alloc>& _item)
+void DEBUG::print(const std::map<_Key, _Tp, _Compare, _Alloc>& _item)
 {
     print_open(MAP_OPEN);
     print_content_container(MAP_SEPARATOR, _item);
@@ -236,7 +241,7 @@ void DEBUG::print(std::map<_Key, _Tp, _Compare, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
-void DEBUG::print(std::multimap<_Key, _Tp, _Compare, _Alloc>& _item)
+void DEBUG::print(const std::multimap<_Key, _Tp, _Compare, _Alloc>& _item)
 {
     print_open(MULTIMAP_OPEN);
     print_content_container(MULTIMAP_SEPARATOR, _item);
@@ -244,7 +249,7 @@ void DEBUG::print(std::multimap<_Key, _Tp, _Compare, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Hash, typename _Pred, typename _Alloc>
-void DEBUG::print(std::unordered_set<_Key, _Hash, _Pred, _Alloc>& _item)
+void DEBUG::print(const std::unordered_set<_Key, _Hash, _Pred, _Alloc>& _item)
 {
     print_open(UNORDERED_SET_OPEN);
     print_content_container(UNORDERED_SET_SEPARATOR, _item);
@@ -252,7 +257,7 @@ void DEBUG::print(std::unordered_set<_Key, _Hash, _Pred, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Hash, typename _Pred, typename _Alloc>
-void DEBUG::print(std::unordered_multiset<_Key, _Hash, _Pred, _Alloc>& _item)
+void DEBUG::print(const std::unordered_multiset<_Key, _Hash, _Pred, _Alloc>& _item)
 {
     print_open(UNORDERED_MULTISET_OPEN);
     print_content_container(UNORDERED_MULTISET_SEPARATOR, _item);
@@ -260,7 +265,7 @@ void DEBUG::print(std::unordered_multiset<_Key, _Hash, _Pred, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Tp, typename _Hash, typename _Pred, typename _Alloc>
-void DEBUG::print(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& _item)
+void DEBUG::print(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& _item)
 {
     print_open(UNORDERED_MAP_OPEN);
     print_content_container(UNORDERED_MAP_SEPARATOR, _item);
@@ -268,7 +273,7 @@ void DEBUG::print(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& _item)
 }
 
 template <typename _Key, typename _Tp, typename _Hash, typename _Pred, typename _Alloc>
-void DEBUG::print(std::unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& _item)
+void DEBUG::print(const std::unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& _item)
 {
     print_open(UNORDERED_MULTIMAP_OPEN);
     print_content_container(UNORDERED_MULTIMAP_SEPARATOR, _item);
@@ -276,7 +281,7 @@ void DEBUG::print(std::unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& _ite
 }
 
 template <typename _Tp, typename _Sequence>
-void DEBUG::print(std::stack<_Tp, _Sequence>& _item)
+void DEBUG::print(const std::stack<_Tp, _Sequence>& _item)
 {
     print_open(STACK_OPEN);
     print_content_query_top(STACK_SEPARATOR, _item);
@@ -284,7 +289,7 @@ void DEBUG::print(std::stack<_Tp, _Sequence>& _item)
 }
 
 template <typename _Tp, typename _Sequence>
-void DEBUG::print(std::queue<_Tp, _Sequence>& _item)
+void DEBUG::print(const std::queue<_Tp, _Sequence>& _item)
 {
     print_open(QUEUE_OPEN);
     print_content_query_front(QUEUE_SEPARATOR, _item);
@@ -292,7 +297,7 @@ void DEBUG::print(std::queue<_Tp, _Sequence>& _item)
 }
 
 template <typename _Tp, typename _Alloc>
-void DEBUG::print(std::deque<_Tp, _Alloc>& _item)
+void DEBUG::print(const std::deque<_Tp, _Alloc>& _item)
 {
     print_open(DEQUE_OPEN);
     print_content_container(DEQUE_SEPARATOR, _item);
@@ -300,7 +305,7 @@ void DEBUG::print(std::deque<_Tp, _Alloc>& _item)
 }
 
 template <typename _Tp, typename _Sequence, typename _Compare>
-void DEBUG::print(std::priority_queue<_Tp, _Sequence, _Compare>& _item)
+void DEBUG::print(const std::priority_queue<_Tp, _Sequence, _Compare>& _item)
 {
     print_open(PRIORITY_QUEUE_OPEN);
     print_content_query_top(PRIORITY_QUEUE_SEPARATOR, _item);
@@ -308,7 +313,7 @@ void DEBUG::print(std::priority_queue<_Tp, _Sequence, _Compare>& _item)
 }
 
 template <typename _Key, typename _Tp, typename _Compare, typename _Tag, typename _Alloc>
-void DEBUG::print(__gnu_pbds::tree<_Key, _Tp, _Compare, _Tag, __gnu_pbds::tree_order_statistics_node_update, _Alloc>& _item)
+void DEBUG::print(const __gnu_pbds::tree<_Key, _Tp, _Compare, _Tag, __gnu_pbds::tree_order_statistics_node_update, _Alloc>& _item)
 {
     print_open(PRIORITY_QUEUE_OPEN);
     print_content_container(PRIORITY_QUEUE_SEPARATOR, _item);
