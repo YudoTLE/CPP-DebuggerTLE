@@ -25,6 +25,20 @@
 #define _TLE_DEBUG_H 1
 
 
+#include <iostream>
+#include <functional>
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+#include <stack>
+#include <queue>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+
+
 size_t LINE_LENGTH = 50;
 
 
@@ -110,10 +124,10 @@ private:
     void generate_labels(std::string _label);
 
     template <typename _Tp>
-    void print_output(_Tp _item);
+    void print_output(const _Tp& _item);
 
     template <typename _Tp, typename... _Tps>
-    void print_output(_Tp _item, const _Tps&... _items);
+    void print_output(const _Tp& _item, const _Tps&... _items);
 
     // Print Opening and Closing
     void print_open(const std::string& _label);
@@ -122,80 +136,80 @@ private:
 
     // Print Different Container
     template <typename _Tp1, typename _Tp2>
-    void print_content_pair(const std::string& _label, std::pair<_Tp1, _Tp2>& _item);
+    void print_content_pair(const std::string& _label, const std::pair<_Tp1, _Tp2>& _item);
 
     template <typename... _Tps>
-    void print_content_tuple(const std::string& _label, std::tuple<_Tps...>& _item);
+    void print_content_tuple(const std::string& _label, const std::tuple<_Tps...>& _item);
 
     template <typename _Tp> 
-    void print_content_container(const std::string& _label, _Tp& _item);
+    void print_content_container(const std::string& _label, const _Tp& _item);
 
     template <typename _Tp> 
-    void print_content_query_front(const std::string& _label, _Tp& _item);
+    void print_content_query_front(const std::string& _label, const _Tp& _item);
 
     template <typename _Tp> 
-    void print_content_query_top(const std::string& _label, _Tp& _item);
+    void print_content_query_top(const std::string& _label, const _Tp& _item);
 
     // Print Various Data Types
     template <typename _Tp>
-    void print(_Tp* _item);
+    void print(const _Tp* _item);
 
     template <typename _Tp>
-    void print(_Tp& _item);
+    void print(const _Tp& _item);
 
     template <typename _Tp1, typename _Tp2>
-    void print(std::pair<_Tp1, _Tp2>& _item);
+    void print(const std::pair<_Tp1, _Tp2>& _item);
 
     template <typename... _Tps>
-    void print(std::tuple<_Tps...>& _item);
+    void print(const std::tuple<_Tps...>& _item);
 
     template <typename _Tp, typename _Alloc>
-    void print(std::vector<_Tp, _Alloc>& _item);
+    void print(const std::vector<_Tp, _Alloc>& _item);
 
     template <typename _Key, typename _Compare, typename _Alloc>
-    void print(std::set<_Key, _Compare, _Alloc>& _item);
+    void print(const std::set<_Key, _Compare, _Alloc>& _item);
 
     template <typename _Key, typename _Compare, typename _Alloc>
-    void print(std::multiset<_Key, _Compare, _Alloc>& _item);
+    void print(const std::multiset<_Key, _Compare, _Alloc>& _item);
 
     template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
-    void print(std::map<_Key, _Tp, _Compare, _Alloc>& _item);
+    void print(const std::map<_Key, _Tp, _Compare, _Alloc>& _item);
 
     template <typename _Key, typename _Tp, typename _Compare, typename _Alloc>
-    void print(std::multimap<_Key, _Tp, _Compare, _Alloc>& _item);
+    void print(const std::multimap<_Key, _Tp, _Compare, _Alloc>& _item);
 
     template <typename _Key, typename _Hash, typename _Pred, typename _Alloc>
-    void print(std::unordered_set<_Key, _Hash, _Pred, _Alloc>& _item);
+    void print(const std::unordered_set<_Key, _Hash, _Pred, _Alloc>& _item);
 
     template <typename _Key, typename _Hash, typename _Pred, typename _Alloc>
-    void print(std::unordered_multiset<_Key, _Hash, _Pred, _Alloc>& _item);
+    void print(const std::unordered_multiset<_Key, _Hash, _Pred, _Alloc>& _item);
 
     template <typename _Key, typename _Tp, typename _Hash, typename _Pred, typename _Alloc>
-    void print(std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& _item);
+    void print(const std::unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& _item);
 
     template <typename _Key, typename _Tp, typename _Hash, typename _Pred, typename _Alloc>
-    void print(std::unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& _item);
+    void print(const std::unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& _item);
 
     template <typename _Tp, typename _Sequence>
-    void print(std::stack<_Tp, _Sequence>& _item);
+    void print(const std::stack<_Tp, _Sequence>& _item);
 
     template <typename _Tp, typename _Sequence>
-    void print(std::queue<_Tp, _Sequence>& _item);
+    void print(const std::queue<_Tp, _Sequence>& _item);
 
     template <typename _Tp, typename _Alloc>
-    void print(std::deque<_Tp, _Alloc>& _item);
+    void print(const std::deque<_Tp, _Alloc>& _item);
 
     template <typename _Tp, typename _Sequence, typename _Compare>
-    void print(std::priority_queue<_Tp, _Sequence, _Compare>& _item);
+    void print(const std::priority_queue<_Tp, _Sequence, _Compare>& _item);
 
     template <typename _Key, typename _Tp, typename _Compare, typename _Tag, typename _Alloc>
-    void print(__gnu_pbds::tree<_Key, _Tp, _Compare, _Tag, __gnu_pbds::tree_order_statistics_node_update, _Alloc>& _item);
+    void print(const __gnu_pbds::tree<_Key, _Tp, _Compare, _Tag, __gnu_pbds::tree_order_statistics_node_update, _Alloc>& _item);
 
 public:
     // Constructor and Destructor
     DEBUG();
-    template<typename... _TpS>
-    DEBUG(std::string _label, _TpS... _items);
+    template<typename... _Tps>
+    DEBUG(std::string _label, const _Tps&... _items);
 
     ~DEBUG();
 
