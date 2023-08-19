@@ -177,7 +177,7 @@ void DEBUG::print_content_query_top(const std::string& _label, const _Tp& _item)
 template <typename _Tp>
 void DEBUG::print(const _Tp* _item)
 {
-    if constexpr (is_same_v<_Tp, char> || is_same_v<_Tp, const char>)
+    if constexpr (std::is_same_v<_Tp, char> || std::is_same_v<_Tp, const char>)
         std::cout << _item;
     else
         std::cout << POINTER_MARK, print(*_item);
