@@ -42,60 +42,80 @@
 size_t LINE_LENGTH = 50;
 
 
-const std::string DEBUG_HEADING                = "> ";
+const std::string DEBUG_HEADING                = "\x1B[92m> \033[0m";
 const std::string DEBUG_SEPARATOR              = ", ";
-const std::string DEBUG_EQUAL                  = " = ";
+const std::string DEBUG_EQUAL                  = "\x1B[33m = \033[0m";
+const std::string DEBUG_UNFOLD                 = "\x1B[96m|\033[0m";
 
-const std::string POINTER_MARK                 = "*";
-const std::string ITERATOR_MARK                = "*";
+const std::string LABEL_OPEN                   = "\033[3m";
+const std::string LABEL_SEPARATOR              = ",";
+const std::string LABEL_CLOSE                  = "\033[0m";
 
-const std::string PAIR_OPEN                    = "(";
-const std::string TUPLE_OPEN                   = "(";
-const std::string VECTOR_OPEN                  = "[";
-const std::string SET_OPEN                     = "{";
-const std::string MULTISET_OPEN                = "{";
-const std::string MAP_OPEN                     = "{";
-const std::string MULTIMAP_OPEN                = "{";
-const std::string UNORDERED_SET_OPEN           = "[";
-const std::string UNORDERED_MULTISET_OPEN      = "[";
-const std::string UNORDERED_MAP_OPEN           = "[";
-const std::string UNORDERED_MULTIMAP_OPEN      = "[";
-const std::string STACK_OPEN                   = "[";
-const std::string QUEUE_OPEN                   = "[";
-const std::string DEQUE_OPEN                   = "[";
-const std::string PRIORITY_QUEUE_OPEN          = "{";
+const std::string ITEM_OPEN                    = "\x1B[37m";
+const std::string ITEM_CLOSE                   = "\033[0m";
 
-const std::string PAIR_CLOSE                   = ")";
-const std::string TUPLE_CLOSE                  = ")";
-const std::string VECTOR_CLOSE                 = "]";
-const std::string SET_CLOSE                    = "}";
-const std::string MULTISET_CLOSE               = "}";
-const std::string MAP_CLOSE                    = "}";
-const std::string MULTIMAP_CLOSE               = "}";
-const std::string UNORDERED_SET_CLOSE          = "]";
-const std::string UNORDERED_MULTISET_CLOSE     = "]";
-const std::string UNORDERED_MAP_CLOSE          = "]";
-const std::string UNORDERED_MULTIMAP_CLOSE     = "]";
-const std::string STACK_CLOSE                  = "]";
-const std::string QUEUE_CLOSE                  = "]";
-const std::string DEQUE_CLOSE                  = "]";
-const std::string PRIORITY_QUEUE_CLOSE         = "}";
+const std::string POINTER_MARK                 = "\x1B[32m*\033[0m";
+const std::string ITERATOR_MARK                = "\x1B[36m*\033[0m";
 
+const std::string PAIR_OPEN                    = "\x1B[94m(\033[0m";
 const std::string PAIR_SEPARATOR               = ", ";
+const std::string PAIR_CLOSE                   = "\x1B[94m)\033[0m";
+
+const std::string TUPLE_OPEN                   = "\x1B[94m(\033[0m";
 const std::string TUPLE_SEPARATOR              = ", ";
+const std::string TUPLE_CLOSE                  = "\x1B[94m)\033[0m";
+
+const std::string VECTOR_OPEN                  = "\x1B[35m[\033[0m";
 const std::string VECTOR_SEPARATOR             = " ";
+const std::string VECTOR_CLOSE                 = "\x1B[35m]\033[0m";
+
+const std::string SET_CLOSE                    = "\x1B[31m}\033[0m";
 const std::string SET_SEPARATOR                = " ";
+const std::string SET_OPEN                     = "\x1B[31m{\033[0m";
+
+const std::string MULTISET_OPEN                = "\x1B[31m{\033[0m";
 const std::string MULTISET_SEPARATOR           = " ";
+const std::string MULTISET_CLOSE               = "\x1B[31m}\033[0m";
+
+const std::string MAP_OPEN                     = "\x1B[31m{\033[0m";
 const std::string MAP_SEPARATOR                = " ";
+const std::string MAP_CLOSE                    = "\x1B[31m}\033[0m";
+
+const std::string MULTIMAP_OPEN                = "\x1B[31m{\033[0m";
 const std::string MULTIMAP_SEPARATOR           = " ";
+const std::string MULTIMAP_CLOSE               = "\x1B[31m}\033[0m";
+
+const std::string UNORDERED_SET_OPEN           = "\x1B[95m{\033[0m";
 const std::string UNORDERED_SET_SEPARATOR      = " ";
+const std::string UNORDERED_SET_CLOSE          = "\x1B[95m}\033[0m";
+
+const std::string UNORDERED_MULTISET_OPEN      = "\x1B[95m{\033[0m";
 const std::string UNORDERED_MULTISET_SEPARATOR = " ";
+const std::string UNORDERED_MULTISET_CLOSE     = "\x1B[95m}\033[0m";
+
+const std::string UNORDERED_MAP_OPEN           = "\x1B[95m{\033[0m";
 const std::string UNORDERED_MAP_SEPARATOR      = " ";
+const std::string UNORDERED_MAP_CLOSE          = "\x1B[95m}\033[0m";
+
+const std::string UNORDERED_MULTIMAP_OPEN      = "\x1B[95m{\033[0m";
 const std::string UNORDERED_MULTIMAP_SEPARATOR = " ";
+const std::string UNORDERED_MULTIMAP_CLOSE     = "\x1B[95m}\033[0m";
+
+const std::string STACK_OPEN                   = "\x1B[31m[\033[0m";
 const std::string STACK_SEPARATOR              = " ";
+const std::string STACK_CLOSE                  = "\x1B[31m]\033[0m";
+
+const std::string QUEUE_OPEN                   = "\x1B[31m[\033[0m";
 const std::string QUEUE_SEPARATOR              = " ";
+const std::string QUEUE_CLOSE                  = "\x1B[31m]\033[0m";
+
+const std::string DEQUE_OPEN                   = "\x1B[35m[\033[0m";
 const std::string DEQUE_SEPARATOR              = " ";
+const std::string DEQUE_CLOSE                  = "\x1B[35m]\033[0m";
+
+const std::string PRIORITY_QUEUE_OPEN          = "\x1B[31m{\033[0m";
 const std::string PRIORITY_QUEUE_SEPARATOR     = " ";
+const std::string PRIORITY_QUEUE_CLOSE         = "\x1B[31m}\033[0m";
 
 
 class DEBUG
@@ -108,12 +128,13 @@ class DEBUG
 
 private:
     // Variables
+    bool hide_label       = false;
     bool force_horizontal = false;
-    int unfold_depth = 1;
+    int unfold_depth      = 1;
 
 private:
     // System Variables
-    std::string indent = "|";
+    std::string indent = DEBUG_UNFOLD;
     std::string label;
     std::deque<std::string> labels{DEBUG_HEADING};
     std::function<void()> delayed_print;
@@ -151,6 +172,9 @@ private:
     void print_content_query_top(const std::string& _label, const _Tp& _item);
 
     // Print Various Data Types
+    template <typename _Tp>
+    void print(_Tp* _item);
+
     template <typename _Tp>
     void print(const _Tp* _item);
 
@@ -215,9 +239,11 @@ public:
 
 public:
     // External Parameters
-    void operator () (const bool& _force_horizontal);
+    DEBUG& operator() (const bool& _force_horizontal);
 
-    void operator () (const int& _unfold_depth);
+    DEBUG& operator() (const int& _unfold_depth);
+
+    void operator-- (int _x);
 };
 
 
@@ -268,3 +294,5 @@ public:
 
 
 #endif /* _TLE_DEBUG_H */
+
+#include <tle/debug.cpp>
