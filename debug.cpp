@@ -49,6 +49,7 @@ void DEBUG::generate_labels(std::string _label)
     bool on_quote        = false;
     bool on_double_quote = false;
 
+    labels.back() += LABEL_OPEN;
     for (char& c : _label)
     {
         if (c == ' ' && !on_quote && !on_double_quote)
@@ -61,14 +62,16 @@ void DEBUG::generate_labels(std::string _label)
 
         if (c == ',' && !indent_depth && !on_quote && !on_double_quote)
         {
+            labels.back() += LABEL_CLOSE;
             if (force_horizontal)
                 labels.back() += DEBUG_SEPARATOR;
             else
-                labels.push_back(depth ? DEBUG_HEADING : "");
+                labels.push_back((depth ? DEBUG_HEADING : "") + LABEL_OPEN);
             continue;
         }
         labels.back() += c;
     }
+    labels.back() += LABEL_CLOSE;
 }
 
 
@@ -77,7 +80,10 @@ void DEBUG::print_output(const _Tp& _item)
 {
     if (!labels.empty())
     {
-        std::cout << labels.front() << DEBUG_EQUAL;
+        if (hide_label)
+            std::cout << DEBUG_HEADING;
+        else
+            std::cout << labels.front() << DEBUG_EQUAL;
         labels.pop_front();
     }
     print(_item);
@@ -89,7 +95,10 @@ void DEBUG::print_output(const _Tp& _item, const _Tps&... _items)
 {
     if (!labels.empty())
     {
-        std::cout << labels.front() << DEBUG_EQUAL;
+        if (hide_label)
+            std::cout << DEBUG_HEADING;
+        else
+            std::cout << labels.front() << DEBUG_EQUAL;
         labels.pop_front();
     }
     print(_item);
@@ -174,6 +183,15 @@ void DEBUG::print_content_query_top(const std::string& _label, const _Tp& _item)
 
 
 // Print Various Data Types
+template <typename _Tp>
+void DEBUG::print(_Tp* _item)
+{
+    if constexpr (std::is_same_v<_Tp, char> || std::is_same_v<_Tp, const char>)
+        std::cout << _item;
+    else
+        std::cout << POINTER_MARK, print(*_item);
+}
+
 template <typename _Tp>
 void DEBUG::print(const _Tp* _item)
 {
@@ -322,11 +340,22 @@ void DEBUG::print(const __gnu_pbds::tree<_Key, _Tp, _Compare, _Tag, __gnu_pbds::
 
 
 // External Parameter
-void DEBUG::operator() (const bool& _force_horizontal)
-    { force_horizontal = _force_horizontal; }
+DEBUG& DEBUG::operator() (const bool& _force_horizontal)
+{
+    force_horizontal = _force_horizontal;
+    return *this;
+}
 
-void DEBUG::operator() (const int& _unfold_depth)
-    { unfold_depth = _unfold_depth, depth = _unfold_depth; }
+DEBUG& DEBUG::operator() (const int& _unfold_depth)
+{
+    unfold_depth = _unfold_depth, depth = _unfold_depth;
+    return *this;
+}
+
+void DEBUG::operator-- (int _x)
+{
+    hide_label = true;
+}
 
 
 
